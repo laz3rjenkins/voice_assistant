@@ -1,4 +1,9 @@
-voices
-recieved_voices
-neiro/models
-models
+models/*
+.idea
+files/*
+.env
+.DS_Store
+app/__pycache__
+app/routes/__pycache__
+app/services/__pycache__
+received_voices
