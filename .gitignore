@@ -6,4 +6,4 @@ files/*
 app/__pycache__
 app/routes/__pycache__
 app/services/__pycache__
-received_voices
+received_voices/*
