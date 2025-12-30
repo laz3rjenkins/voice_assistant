@@ -1,9 +1,13 @@
-models/*
+models/*.gguf
+models/*.zip
+models/*/
 .idea
-files/*
+files/*.ogg
+files/*.wav
 .env
 .DS_Store
 app/__pycache__
 app/routes/__pycache__
 app/services/__pycache__
-received_voices/*
+received_voices/*.wav
+received_voices/*.webm
