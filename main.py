@@ -1,9 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.recognition import bp as recognition_bp
 
 app = Flask(__name__)
+CORS(app)
 app.register_blueprint(recognition_bp)
 
 if __name__ == "__main__":
-    print("Flask ready")
-    app.run()
+    app.run(debug=False)

@@ -6,3 +6,5 @@ SpeechRecognition~=3.14.4
 faster-whisper~=1.2.1
 llama-cpp-python~= 0.3.16
 python-dotenv~=1.2.1
+flask-cors~=6.0.2
+pydub~=0.25.1

@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 import os
 from config import UPLOAD_FOLDER
 from services.audio_recognition import recognize_audio
+from services.llm_command_parser import parse_text
 
 bp = Blueprint("recognition", __name__)
 
@@ -20,11 +21,13 @@ def recognize_text():
 
     try:
         text = recognize_audio(filepath)
+        commands = parse_text(text)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
     return jsonify({
         "message": f"Файл {file.filename} успешно загружен",
         # "filepath": filepath,
-        "recognized_text": text
+        "recognized_text": text,
+        "commands": commands,
     })
