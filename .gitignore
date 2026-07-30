@@ -14,3 +14,4 @@ received_voices/*
 voice.log
 CLAUDE.md
 VOICE_COMMANDS.md
+__pycache__
