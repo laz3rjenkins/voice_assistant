@@ -9,5 +9,8 @@ files/*.wav
 app/__pycache__
 app/routes/__pycache__
 app/services/__pycache__
-received_voices/*.wav
-received_voices/*.webm
+received_voices/*
+!received_voices/.gitkeep
+voice.log
+CLAUDE.md
+VOICE_COMMANDS.md

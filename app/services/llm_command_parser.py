@@ -1,33 +1,45 @@
-from llama_cpp import Llama
+import json
+import logging
+
+from groq import Groq
 
 import config
 
-def parse_text(text: str):
-    llm = Llama(
-        model_path=config.LLM_MODEL_PATH,
-        n_ctx=2048,
-        n_threads=8,
+client = Groq(api_key=config.GROQ_API_KEY)
+logger = logging.getLogger(__name__)
+
+
+def parse_text(text: str, context: str | None = None):
+    context = " ".join(context.split()) if context else None
+
+    user_content = f"Контекст: {context}\nКоманда: {text}" if context else f"Команда: {text}"
+
+    resp = client.chat.completions.create(
+        # model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
+        messages=[
+            {"role": "system", "content": config.SYSTEM_PROMPT},
+            {"role": "user", "content": user_content},
+        ],
         temperature=0.0,
-        verbose=False,
+        max_tokens=1024,
+        stop=["<END>"], # закомментить для openai/gpt-oss-120b
     )
 
-    SYSTEM_PROMPT = config.SYSTEM_PROMPT
-    user_text = text
-    prompt = f"""
-    {SYSTEM_PROMPT}
+    output = resp.choices[0].message.content.strip() # для llama-3.3-70b-versatile
+    # output = (resp.choices[0].message.content or "").split("<END>")[0].strip() # для openai/gpt-oss-120b
+    output = output.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
 
-    Команда пользователя:
-    {user_text}
+    logger.info("ПРОМПТ\n%s\nОТВЕТ LLM\n%s\n", user_content, output)
 
-    Ответ:
-    """
+    try:
+        command = json.loads(output)
+    except json.JSONDecodeError:
+        return {"kind": "none", "raw": output}
 
-    result = llm(
-        prompt,
-        max_tokens=64,
-        stop=["<END>"]
-    )
+    # ponytail: проверяем только конверт. Сверку name с реестром роутов делает фронт —
+    # реестр живёт там же, где router.visit(); дублировать его здесь нечем.
+    if not isinstance(command, dict) or command.get("kind") not in ("nav", "form", "api", "none"):
+        return {"kind": "none", "raw": output}
 
-    output = result["choices"][0]["text"].strip()
-
-    return output
+    return command
