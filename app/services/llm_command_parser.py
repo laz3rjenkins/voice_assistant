@@ -15,8 +15,8 @@ def parse_text(text: str, context: str | None = None):
     user_content = f"Контекст: {context}\nКоманда: {text}" if context else f"Команда: {text}"
 
     resp = client.chat.completions.create(
-        # model="llama-3.3-70b-versatile",
-        model="openai/gpt-oss-120b",
+        model="llama-3.3-70b-versatile",
+        # model="openai/gpt-oss-120b",
         messages=[
             {"role": "system", "content": config.SYSTEM_PROMPT},
             {"role": "user", "content": user_content},
@@ -30,7 +30,11 @@ def parse_text(text: str, context: str | None = None):
     # output = (resp.choices[0].message.content or "").split("<END>")[0].strip() # для openai/gpt-oss-120b
     output = output.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
 
-    logger.info("ПРОМПТ\n%s\nОТВЕТ LLM\n%s\n", user_content, output)
+    usage = resp.usage
+    logger.info(
+        "ПРОМПТ\n%s\nТОКЕНЫ вход=%s выход=%s всего=%s\nОТВЕТ LLM\n%s\n",
+        user_content, usage.prompt_tokens, usage.completion_tokens, usage.total_tokens, output,
+    )
 
     try:
         command = json.loads(output)

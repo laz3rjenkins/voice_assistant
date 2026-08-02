@@ -9,3 +9,4 @@ python-dotenv~=1.2.1
 flask-cors~=6.0.2
 pydub~=0.25.1
 groq~=1.6.0
+tiktoken~=0.13.0
