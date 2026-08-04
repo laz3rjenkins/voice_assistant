@@ -1,5 +1,10 @@
 import logging
 import os
+import sys
+
+# Пакеты лежат в app/, а не в корне: PyCharm знает это из source root в .iml,
+# консоль — нет. Без этой строки `python main.py` падает на `from config import`.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "app"))
 
 from flask import Flask
 from flask_cors import CORS

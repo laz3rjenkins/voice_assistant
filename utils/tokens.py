@@ -1,6 +1,6 @@
 """Счётчик токенов — чтобы видеть, сколько стоит промпт и каждая его секция.
 
-    ./venv/bin/python utils/tokens.py           # разбивка SYSTEM_PROMPT по секциям
+    ./venv/bin/python utils/tokens.py           # разбивка prompts/system.md по секциям
     ./venv/bin/python utils/tokens.py file.txt  # файл одним числом
     echo "текст" | ./venv/bin/python utils/tokens.py -
     ./venv/bin/python utils/tokens.py --check   # самопроверка
@@ -10,13 +10,9 @@
 её хватает, чтобы сравнивать секции между собой и прикидывать экономию.
 """
 
-import os
 import re
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
-
-load_dotenv()
 
 try:
     # o200k_base — база токенизатора gpt-oss. Для llama/qwen расхождение
@@ -67,13 +63,12 @@ def _main(argv: list[str]):
 
         return
 
-    from dotenv import load_dotenv
+    path = Path(__file__).parent.parent / "prompts" / "system.md"
 
-    load_dotenv(Path(__file__).parent.parent / ".env")
-    prompt = os.getenv("SYSTEM_PROMPT", "")
+    if not path.exists():
+        sys.exit(f"нет файла промпта: {path}")
 
-    if not prompt:
-        sys.exit("SYSTEM_PROMPT пуст — проверьте .env")
+    prompt = path.read_text(encoding="utf-8").strip()
 
     rows = by_section(prompt)
     total = count(prompt)

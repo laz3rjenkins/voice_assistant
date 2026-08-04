@@ -16,3 +16,6 @@ CLAUDE.md
 VOICE_COMMANDS.md
 __pycache__
 TESTED.md
+old_system_prompt.md
+.env.bak-20260803
+/prompts/*.md

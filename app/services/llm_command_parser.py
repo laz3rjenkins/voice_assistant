@@ -1,9 +1,11 @@
 import json
 import logging
+import re
 
 from groq import Groq
 
 import config
+from services.prompt_builder import build, select
 
 client = Groq(api_key=config.GROQ_API_KEY)
 logger = logging.getLogger(__name__)
@@ -14,11 +16,13 @@ def parse_text(text: str, context: str | None = None):
 
     user_content = f"Контекст: {context}\nКоманда: {text}" if context else f"Команда: {text}"
 
+    system_prompt = build(text, context)
+
     resp = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         # model="openai/gpt-oss-120b",
         messages=[
-            {"role": "system", "content": config.SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_content},
         ],
         temperature=0.0,
@@ -31,9 +35,12 @@ def parse_text(text: str, context: str | None = None):
     output = output.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
 
     usage = resp.usage
+    route = re.search(r"route=([\w.-]+)", context or "")
     logger.info(
-        "ПРОМПТ\n%s\nТОКЕНЫ вход=%s выход=%s всего=%s\nОТВЕТ LLM\n%s\n",
-        user_content, usage.prompt_tokens, usage.completion_tokens, usage.total_tokens, output,
+        "ПРОМПТ\n%s\nНАЙДЕНО %s\nТОКЕНЫ вход=%s выход=%s всего=%s\nОТВЕТ LLM\n%s\n",
+        user_content,
+        ", ".join(u.uid for u in select(text, route.group(1) if route else None)),
+        usage.prompt_tokens, usage.completion_tokens, usage.total_tokens, output,
     )
 
     try:
