@@ -1,12 +1,6 @@
 flask~=3.1.2
-vosk~=0.3.44
-ctransformers
-whisper~=1.1.10
-SpeechRecognition~=3.14.4
-faster-whisper~=1.2.1
-llama-cpp-python~= 0.3.16
-python-dotenv~=1.2.1
 flask-cors~=6.0.2
-pydub~=0.25.1
+faster-whisper~=1.2.1
 groq~=1.6.0
+python-dotenv~=1.2.1
 tiktoken~=0.13.0
